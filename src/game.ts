@@ -1,4 +1,8 @@
 import'phaser';
+//
+import { Character } from './characters/Character';
+// types //
+import type { ModelAnimationOpts } from './types_interfaces/abstract/genericUserModel';
 
 export default class Demo extends Phaser.Scene
 {
@@ -51,7 +55,6 @@ export default class Demo extends Phaser.Scene
             repeat: -1
         })
         */
-
         this.add.image(400, 300, "industrialDefault").setScale(2);
         this.platforms = this.physics.add.staticGroup();
 
@@ -78,39 +81,23 @@ export default class Demo extends Phaser.Scene
                 xPos2 += 32;
             }
         }
-        // player //
-        this.player = this.physics.add.sprite(100, 450, "punkIdle");
-        this.player.setBounce(0);
-        this.player.setCollideWorldBounds(true);
-        this.player.setSize(24, 48);
+        
+        const playerAnimations: ModelAnimationOpts[] = [
+            { key: "punkIdle", frameStart: 0, frameEnd: 3, repeat: true },
+            { key: "punkRun", frameStart: 0, frameEnd: 5, repeat: true },
+            { key: "punkJump", frameStart: 0, frameEnd: 4, repeat: true }
+
+        ];        
+        this.player = new Character
+        (
+            this, 
+            { spriteKey: "punkIdle", xPos: 100, yPos: 450 }, 
+            { size: { x: 24, y: 48 } }
+        )
+        .initialize(playerAnimations);
 
         this.physics.add.collider(this.player, this.platforms);
 
-        this.player.anims.create({ 
-            key: "punkIdle",
-            frames: this.anims.generateFrameNumbers("punkIdle", { start: 0, end: 3 }),
-            frameRate: 15,
-            repeat: -1
-        });
-
-        this.player.anims.create({
-            key: "punkRun",
-            frames: this.anims.generateFrameNumbers("punkRun", { start: 0, end: 5 }),
-            frameRate: 15,
-            repeat: -1
-        })
-        this.player.anims.create({
-            key: "punkJump",
-            frames: this.anims.generateFrameNumbers("punkJump", { start: 0, end: 4 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.player.anims.create({
-            key: "punkDoubleJump",
-            frames: this.anims.generateFrameNumbers("punkDoubleJump", { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
 
         this.cursors = this.input.keyboard.createCursorKeys();
         
@@ -120,17 +107,21 @@ export default class Demo extends Phaser.Scene
 
         if (this.cursors.left.isDown) {
             this.player.flipX = true;
-            this.player.anims.play("punkRun", true);
             this.player.setVelocityX(-100);
+            if (this.player.body.onFloor) {
+                this.player.anims.play("punkRun", true);
+            }
         } else if (this.cursors.right.isDown) {
             this.player.flipX = false;
-            this.player.anims.play("punkRun", true);
             this.player.setVelocityX(100);
+            if (this.player.body.onFloor) {
+                this.player.anims.play("punkRun", true);
+            }
         } else {
             if (this.player.body.onFloor()) {
                 this.player.anims.play("punkIdle", true);
             } else {
-                this.player.anims.play("punkDoubleJump", true);
+                this.player.anims.play("punkJump", true);
             }
             this.player.setVelocityX(0);
         }
@@ -138,8 +129,6 @@ export default class Demo extends Phaser.Scene
         if (this.cursors.up.isDown && this.player.body.onFloor()) {
             this.player.setVelocityY(-200);
         }
-
-       
     }
 }
 

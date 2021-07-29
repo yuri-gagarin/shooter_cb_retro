@@ -26,6 +26,10 @@ export default class Demo extends Phaser.Scene
         this.load.image("industrialDefault", "assets/backgrounds/industrial_default.png");
         this.load.image("xBoxTile", 'assets/tiles/IndustrialTile_02.png');
         this.load.image("ironXTile", "assets/tiles/IndustrialTile_36.png");
+        // backgrounds //
+        this.load.image("cbForeground", "assets/backgrounds/foreground.png");
+        this.load.image("cbMidBuildings", "assets/backgrounds/back-buildings.png");
+        this.load.image("cbFarBuildings", "assets/backgrounds/far-buildings.png");
         // animations //
         this.load.spritesheet("punkIdle", "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
         this.load.spritesheet("punkRun", "assets/characters/punk/Punk_run.png", { frameWidth: 48, frameHeight: 48 });
@@ -37,24 +41,9 @@ export default class Demo extends Phaser.Scene
 
     create ()
     {   
-        /*
-        this.add.shader('RGB Shift Field', 0, 0, 800, 600).setOrigin(0);
+        const width = this.scale.width;
+        const height = this.scale.height;
 
-        this.add.shader('Plasma', 0, 412, 800, 172).setOrigin(0);
-
-        this.add.image(400, 300, 'libs');
-
-        const logo = this.add.image(400, 70, 'logo');
-        
-        this.tweens.add({
-            targets: logo,
-            y: 350,
-            duration: 3500,
-            ease: 'Sine.inOut',
-            yoyo: true,
-            repeat: -1
-        })
-        */
         this.add.image(400, 300, "industrialDefault").setScale(2);
         this.platforms = this.physics.add.staticGroup();
 
@@ -91,13 +80,15 @@ export default class Demo extends Phaser.Scene
         this.player = new Character
         (
             this, 
-            { spriteKey: "punkIdle", xPos: 100, yPos: 450 }, 
+            { spriteKey: "punkIdle", xPos: 100, yPos: 40 }, 
             { size: { x: 24, y: 48 } }
         )
         .initialize(playerAnimations);
 
         this.physics.add.collider(this.player, this.platforms);
-
+        this.physics.world.setBounds(0, 0, 3392, 800);
+        this.cameras.main.setBounds(0, 0, 3392, 100);
+        this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
 
         this.cursors = this.input.keyboard.createCursorKeys();
         

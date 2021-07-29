@@ -24,9 +24,10 @@ export default class Demo extends Phaser.Scene
         this.load.image("ironXTile", "assets/tiles/IndustrialTile_36.png");
         // animations //
         this.load.spritesheet("punkIdle", "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
-        this.load.spritesheet("punkRunLeft", "assets/characters/punk/Punk_run_left.png", { frameWidth: 48, frameHeight: 48 });
-        this.load.spritesheet("punkRunRight", "assets/characters/punk/Punk_run_right.png", { frameWidth: 48, frameHeight: 48 });
+        this.load.spritesheet("punkRun", "assets/characters/punk/Punk_run.png", { frameWidth: 48, frameHeight: 48 });
         this.load.spritesheet("punkJump", "assets/characters/punk/Punk_jump.png", { frameWidth: 48, frameHeight: 48 });
+        this.load.spritesheet("punkDoubleJump", "assets/characters/punk/Punk_doublejump.png", { frameWidth: 48, frameHeight: 48 });
+
 
     }
 
@@ -78,35 +79,36 @@ export default class Demo extends Phaser.Scene
             }
         }
         // player //
-        this.player  = this.physics.add.sprite(100, 450, "punkIdle");
-        this.player.setBounce(0.2);
+        this.player = this.physics.add.sprite(100, 450, "punkIdle");
+        this.player.setBounce(0);
         this.player.setCollideWorldBounds(true);
+        this.player.setSize(24, 48);
 
         this.physics.add.collider(this.player, this.platforms);
 
         this.player.anims.create({ 
-            key: "idle",
+            key: "punkIdle",
             frames: this.anims.generateFrameNumbers("punkIdle", { start: 0, end: 3 }),
             frameRate: 15,
             repeat: -1
         });
 
         this.player.anims.create({
-            key: "left",
-            frames: this.anims.generateFrameNumbers("punkRunLeft", { start: 5, end: 0 }),
+            key: "punkRun",
+            frames: this.anims.generateFrameNumbers("punkRun", { start: 0, end: 5 }),
             frameRate: 15,
             repeat: -1
         })
         this.player.anims.create({
-            key: "right",
-            frames: this.anims.generateFrameNumbers("punkRunRight", { start: 0, end: 5 }),
-            frameRate: 15,
+            key: "punkJump",
+            frames: this.anims.generateFrameNumbers("punkJump", { start: 0, end: 4 }),
+            frameRate: 10,
             repeat: -1
         });
         this.player.anims.create({
-            key: "punkJump",
-            frames: this.anims.generateFrameNumbers("punkJump", { start: 0, end: 4 }),
-            frameRate: 15,
+            key: "punkDoubleJump",
+            frames: this.anims.generateFrameNumbers("punkDoubleJump", { start: 0, end: 5 }),
+            frameRate: 10,
             repeat: -1
         });
 
@@ -115,21 +117,29 @@ export default class Demo extends Phaser.Scene
     };
 
     update () {
+
         if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160);
-            this.player.anims.play("left", true);
+            this.player.flipX = true;
+            this.player.anims.play("punkRun", true);
+            this.player.setVelocityX(-100);
         } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(150);
-            this.player.anims.play("right", true);
+            this.player.flipX = false;
+            this.player.anims.play("punkRun", true);
+            this.player.setVelocityX(100);
         } else {
+            if (this.player.body.onFloor()) {
+                this.player.anims.play("punkIdle", true);
+            } else {
+                this.player.anims.play("punkDoubleJump", true);
+            }
             this.player.setVelocityX(0);
-            this.player.anims.play("idle", true);
         }
 
-        if (this.player.body.touching.down && this.cursors.up.isDown) {
-            this.player.setVelocityY(-300);
-            this.player.anims.play("punkJump", true);
+        if (this.cursors.up.isDown && this.player.body.onFloor()) {
+            this.player.setVelocityY(-200);
         }
+
+       
     }
 }
 
@@ -141,9 +151,9 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: "arcade",
         arcade: {
-            gravity: { y: 300 },
-            debug: false
-        }
+            gravity: { y: 200 },
+            debug: true
+        },
     },
     scene: Demo
 };

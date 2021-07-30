@@ -1,9 +1,11 @@
-import'phaser';
+import Phaser from "./lib/phaser";
 //
 import { Character } from './characters/Character';
+import CityLevelScene from "./scenes/CityLevelScene";
 // types //
 import type { ModelAnimationOpts } from './types_interfaces/abstract/genericUserModel';
 
+/*
 export default class Demo extends Phaser.Scene
 {
     private platforms: Phaser.Physics.Arcade.StaticGroup;
@@ -17,12 +19,6 @@ export default class Demo extends Phaser.Scene
 
     preload ()
     {
-        /*
-        this.load.image('logo', 'assets/phaser3-logo.png');
-        this.load.image('libs', 'assets/libs.png');
-        this.load.glsl('bundle', 'assets/plasma-bundle.glsl.js');
-        this.load.glsl('stars', 'assets/starfields.glsl.js');
-        */
         this.load.image("industrialDefault", "assets/backgrounds/industrial_default.png");
         this.load.image("xBoxTile", 'assets/tiles/IndustrialTile_02.png');
         this.load.image("ironXTile", "assets/tiles/IndustrialTile_36.png");
@@ -122,6 +118,7 @@ export default class Demo extends Phaser.Scene
         }
     }
 }
+*/
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -135,7 +132,7 @@ const config: Phaser.Types.Core.GameConfig = {
             debug: true
         },
     },
-    scene: Demo
+    scene: CityLevelScene
 };
 
 const game = new Phaser.Game(config);

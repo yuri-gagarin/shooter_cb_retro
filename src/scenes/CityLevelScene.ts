@@ -1,5 +1,5 @@
 import Phaser from "../lib/phaser";
-
+import { Character } from "../characters/Character";
 
 type BackgroundOpts = {
   position?: { posX?: number; posY?: number; };
@@ -13,6 +13,8 @@ export default class CityLevelScene extends Phaser.Scene {
   private height: number;
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  // characters //
+  private player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 
   constructor() {
     super("cityLevelScene");
@@ -25,7 +27,10 @@ export default class CityLevelScene extends Phaser.Scene {
     this.load.image("cbForeground", "assets/backgrounds/foreground.png");
     this.load.image("cbMidBuildings", "assets/backgrounds/back-buildings.png");
     this.load.image("cbFarBuildings", "assets/backgrounds/far-buildings.png");
-    //
+    // city bricks //
+    this.load.image("cityBrick1", "assets/tiles/bricks/city_brick1.png");
+    // characters //
+    this.load.spritesheet("punkIdle", "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
@@ -50,30 +55,63 @@ export default class CityLevelScene extends Phaser.Scene {
     // player bacground, should scroll with player //
     this.setBackgrounds(
       { scene: this, imageKey: "cbForeground" },
-      { position: { posX: 0, posY: this.height }, 
+      { position: { posX: 0, posY: this.height * 0.97 }, 
         origin: { originX: 0, originY: 1 }, 
         scale: { scaleX: 2, scaleY: 2 }, 
         scrollFactor: { scrollFactorX: 1, scrollFactorY: 1 } 
       }
     );
+
+    this.player = new Character
+    (
+      this, 
+      { spriteKey: "punkIdle", xPos: 100, yPos: this.height - 20 }, 
+      { size: { x: 24, y: 48 } }
+    )
+    .initialize()
+    .setScale(2);
+    this.player.body.setAllowGravity(false);
+    this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, 500, this.width, 100));
+
+    // fence foreground //
+    // must be after all character models //
+    this.setBackgrounds(
+      { scene: this, imageKey: "cityBrick1" },
+      { position: { posX: 0, posY: this.height + 30 },
+        origin: { originX: 0, originY: 1 },
+        scrollFactor: { scrollFactorX: 1.25, scrollFactorY: 1.25 }
+      }
+    );
+
     // camera //
     this.cameras.main.setBounds(0, 0, this.width * 4, this.height);
+    this.physics.world.setBounds(0, 0, this.width * 4, this.height);
+
+    // follow player //
+    this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
   }
 
   update() {
     const mainCam = this.cameras.main;
-    const cameraSpeed = 3;
 
     if (this.cursors.left.isDown) {
-      mainCam.scrollX -= cameraSpeed;
+      this.player.setVelocityX(-100);
     } else if (this.cursors.right.isDown) {
-      mainCam.scrollX += cameraSpeed;
+      this.player.setVelocityX(100);
+    } else if (this.cursors.up.isDown) {
+      this.player.setVelocityY(-100);
+    } else if (this.cursors.down.isDown) {
+      this.player.setVelocityY(100);
+    } else {
+      this.player.setVelocityX(0);
+      this.player.setVelocityY(0);
     }
+
+
   }
 
   
   private setBackgrounds({ scene, imageKey }: { scene: Phaser.Scene; imageKey: string }, imageOpts?: BackgroundOpts): void {
-    console.log(scene.cameras.main.getBounds())
     const { position = {}, scale = {}, origin = {}, scrollFactor = {} } = imageOpts ? imageOpts : {}
     // positioning //
     const { posX = 0, posY = 0 } = position;

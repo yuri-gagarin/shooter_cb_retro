@@ -1,5 +1,8 @@
 import Phaser from "../lib/phaser";
+// models //
 import { Character } from "../characters/Character";
+// animations //
+import characterAnimations from "../animations/characterAnimations";
 
 type BackgroundOpts = {
   position?: { posX?: number; posY?: number; };
@@ -32,6 +35,12 @@ export default class CityLevelScene extends Phaser.Scene {
     // characters //
     this.load.spritesheet("punkIdle", "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
     this.cursors = this.input.keyboard.createCursorKeys();
+    // ANIMATIONS //
+    // animations //
+    this.load.spritesheet("punkIdle", "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet("punkRun", "assets/characters/punk/Punk_run.png", { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet("punkJump", "assets/characters/punk/Punk_jump.png", { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet("punkDoubleJump", "assets/characters/punk/Punk_doublejump.png", { frameWidth: 48, frameHeight: 48 });
   }
 
   create() {
@@ -65,10 +74,10 @@ export default class CityLevelScene extends Phaser.Scene {
     this.player = new Character
     (
       this, 
-      { spriteKey: "punkIdle", xPos: 100, yPos: this.height - 20 }, 
-      { size: { x: 24, y: 48 } }
+      { spriteKey: "punkIdle", xPos: 100, yPos: this.height - 100 }, 
+      { size: { x: 24, y: 24 } }
     )
-    .initialize()
+    .initialize(characterAnimations.PUNK_ANIMATIONS)
     .setScale(2);
     this.player.body.setAllowGravity(false);
     this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, 500, this.width, 100));
@@ -95,16 +104,23 @@ export default class CityLevelScene extends Phaser.Scene {
     const mainCam = this.cameras.main;
 
     if (this.cursors.left.isDown) {
+      this.player.flipX = true;
       this.player.setVelocityX(-100);
+      this.player.anims.play("punkRun", true);
     } else if (this.cursors.right.isDown) {
+      this.player.flipX = false;
       this.player.setVelocityX(100);
+      this.player.anims.play("punkRun", true);
     } else if (this.cursors.up.isDown) {
       this.player.setVelocityY(-100);
+      this.player.anims.play("punkRun", true);
     } else if (this.cursors.down.isDown) {
       this.player.setVelocityY(100);
+      this.player.anims.play("punkRun", true);
     } else {
       this.player.setVelocityX(0);
       this.player.setVelocityY(0);
+      this.player.anims.play("punkIdle", true);
     }
 
 

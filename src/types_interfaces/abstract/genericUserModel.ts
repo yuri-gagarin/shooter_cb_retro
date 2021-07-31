@@ -1,7 +1,9 @@
 import { Scene } from "phaser";
 
+export type PunkAnimation = "punkIdle" | "punkRun" | "punkJump";
+
 export type ModelAnimationOpts = {
-  key: string;
+  key: PunkAnimation;
   spriteName?: string;
   frameStart: number;
   frameEnd: number;

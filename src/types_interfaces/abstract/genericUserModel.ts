@@ -1,6 +1,14 @@
 import { Scene } from "phaser";
 
-export type PunkAnimation = "punkIdle" | "punkRun" | "punkJump" | "punkAttackShoot";
+export enum PunkAnimation { 
+  punkIdle = "punkIdle",
+  punkRun = "punkRun",
+  punkJump = "punkJump", 
+  punkDoubleJump = "punkDoubleJump",
+  punkAttackSpecial = "punkAttackSpecial", 
+  punkAttackNormal = "punkAttackNormal", 
+  punkAttackKick = "punkAttackKick" 
+};
 
 export type ModelAnimationOpts = {
   key: PunkAnimation;

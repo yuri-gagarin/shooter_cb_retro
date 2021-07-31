@@ -12,7 +12,7 @@ export class Character extends GenericUserModel {
     if (modelAnimations && modelAnimations.length > 0) {
       for (const animation of modelAnimations) {
         let self = this;
-        let animationName = animation.spriteName ? animation.spriteName : animation.key;
+        let animationName: string = (animation.spriteName ? animation.spriteName : animation.key);
         let repeat = animation.repeat ? animation.repeat : false;
         const frameOpts: { frames?: number[]; start?: number; end?: number } = animation.frames ? { frames: animation.frames } : {};
         if (animation.frameStart && animation.frameEnd) {

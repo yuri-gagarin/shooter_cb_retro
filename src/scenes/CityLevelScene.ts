@@ -22,6 +22,7 @@ export default class CityLevelScene extends Phaser.Scene {
   private player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private attackKey: Phaser.Input.Keyboard.Key;
   private attackSpecialKey: Phaser.Input.Keyboard.Key;
+  private attackChargeKey: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super("cityLevelScene");
@@ -47,6 +48,7 @@ export default class CityLevelScene extends Phaser.Scene {
     this.load.spritesheet(PunkAnimation.punkDoubleJump, "assets/characters/punk/Punk_doublejump.png", { frameWidth: 48, frameHeight: 48 });
     this.load.spritesheet(PunkAnimation.punkAttackNormal, "assets/characters/punk/Punk_attack1.png", { frameWidth: 48, frameHeight: 48 });
     this.load.spritesheet(PunkAnimation.punkAttackSpecial, "assets/characters/punk/Punk_attack3.png", { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet(PunkAnimation.punkAttackCharge, "assets/characters/punk/Punk_run_attack.png", { frameWidth: 48, frameHeight: 48 });
   }
 
   create() {
@@ -108,6 +110,7 @@ export default class CityLevelScene extends Phaser.Scene {
     // keys //
     this.attackKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.attackSpecialKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.attackChargeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
   }
 
   update() {
@@ -133,10 +136,12 @@ export default class CityLevelScene extends Phaser.Scene {
       this.player.anims.play(PunkAnimation.punkAttackNormal, true);
     } else if (this.attackSpecialKey.isDown) {
       this.player.anims.play(PunkAnimation.punkAttackSpecial, true);
+    } else if (this.attackChargeKey.isDown) {
+      this.player.anims.play(PunkAnimation.punkAttackCharge, true);
+      this.slideCharacter(10, this.player);
     } else {
       this.player.setVelocityX(0);
       this.player.setVelocityY(0);
-      //this.player.anims.play("punkIdle", true);
     }
 
    
@@ -178,6 +183,12 @@ export default class CityLevelScene extends Phaser.Scene {
         } else {
           this.player.anims.play(PunkAnimation.punkIdle);
         }
+      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkAnimation.punkAttackCharge) {
+        if (this.player.anims.isPlaying) {
+          return;
+        } else {
+          this.player.anims.play(PunkAnimation.punkIdle);
+        }
       } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkAnimation.punkIdle && this.player.anims.isPlaying) {
         return;
       } else {
@@ -186,6 +197,18 @@ export default class CityLevelScene extends Phaser.Scene {
     } else {
       return;
     } 
+  }
+
+  private slideCharacter(xValue: number, character: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, interval?: number) {
+    let timer: number = 0;
+    const increment = interval ? interval : 100;
+    const slider = character.flipX ? - 5 : 5;
+    for (let i = 0; i < xValue; i += 5) {
+      setTimeout(() => {
+        character.setX(character.x + slider);
+      }, timer);
+      timer += increment;
+    }
   }
 };
 

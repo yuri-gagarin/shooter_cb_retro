@@ -7,7 +7,7 @@ export enum PunkAnimation {
   punkDoubleJump = "punkDoubleJump",
   punkAttackSpecial = "punkAttackSpecial", 
   punkAttackNormal = "punkAttackNormal", 
-  punkAttackKick = "punkAttackKick" 
+  punkAttackCharge = "punkAttackCharge" 
 };
 
 export type ModelAnimationOpts = {

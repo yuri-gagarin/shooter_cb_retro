@@ -1,14 +1,15 @@
 import { Scene } from "phaser";
 
-export type PunkAnimation = "punkIdle" | "punkRun" | "punkJump";
+export type PunkAnimation = "punkIdle" | "punkRun" | "punkJump" | "punkAttackShoot";
 
 export type ModelAnimationOpts = {
   key: PunkAnimation;
   spriteName?: string;
-  frameStart: number;
-  frameEnd: number;
+  frameStart?: number;
+  frameEnd?: number;
   frameRate?: number;
   repeat?: boolean;
+  frames?: number[];
 };
 
 export type CharacterSprite = {

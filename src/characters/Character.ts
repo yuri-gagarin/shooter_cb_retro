@@ -14,9 +14,14 @@ export class Character extends GenericUserModel {
         let self = this;
         let animationName = animation.spriteName ? animation.spriteName : animation.key;
         let repeat = animation.repeat ? animation.repeat : false;
+        const frameOpts: { frames?: number[]; start?: number; end?: number } = animation.frames ? { frames: animation.frames } : {};
+        if (animation.frameStart && animation.frameEnd) {
+          frameOpts.start = animation.frameStart;
+          frameOpts.end = animation.frameEnd;
+        }
         this.model.anims.create({
           key: animation.key,
-          frames: self.model.anims.generateFrameNumbers(animationName, { start: animation.frameStart, end: animation.frameEnd }),
+          frames: self.model.anims.generateFrameNumbers(animationName, { ...frameOpts }),
           frameRate: animation.frameRate ? animation.frameRate : 15
         })
         if (repeat) this.model.anims.get(animationName).repeat = -1;

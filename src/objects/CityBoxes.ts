@@ -4,6 +4,20 @@ import { CityStreetObjects } from "../types_interfaces/enums/gameObjects";
 import { GenericObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
 import type { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
 
+type CityBoxSetArg = {
+  spriteKey: string;
+  numberOfBoxes: number;
+  width: number;
+  height: number;
+  posX: number; 
+  posY: number; 
+  scaleX?: number; 
+  scaleY?: number;
+  offsetX?: number;
+  offsetY?: number;
+  immovable?: boolean;
+}
+
 export class CityBoxes extends GenericObjectLoader implements IObjectLoader {
   constructor(scene: Phaser.Scene) {
     super(scene);
@@ -47,6 +61,25 @@ export class CityBoxes extends GenericObjectLoader implements IObjectLoader {
         console.log(posX)
       }
       scene.physics.add.collider(ironBoxGroup, characters);
+
     })(this.scene);
+
+    const secondBoxSet = this.setBoxes({ 
+      spriteKey: CityStreetObjects.boxIron, numberOfBoxes: 2, posX: 500, posY: 480, width: 28, height: 20, scaleX: 1.5, scaleY: 1.5, offsetX: 4, offsetY: 10 
+    });
+    const thirdBoxSet = this.setBoxes({
+      spriteKey: CityStreetObjects.boxIron, numberOfBoxes: 2, posX: 300, posY: 570, width: 28, height: 20, scaleX: 1.5, scaleY: 1.5, offsetX: 4, offsetY: 10 
+    })
+  }
+
+  private setBoxes({ spriteKey, numberOfBoxes, posX, posY, width, height, scaleX = 1, scaleY = 1, offsetX = 0.5, offsetY = 0.5, immovable = true }: CityBoxSetArg): Phaser.Physics.Arcade.Group {
+    let boxX = posX;
+    let boxY = posY;
+    const boxGroup = this.scene.physics.add.group({ defaultKey: spriteKey, collideWorldBounds: true });
+    for (let i = 0; i < numberOfBoxes; i++) {
+      boxGroup.create(boxX, boxY).setSize(width, height).setScale(scaleX, scaleY).setOffset(offsetX, offsetY).body.setAllowGravity(false).setImmovable(immovable);
+      boxX = boxX + (width * scaleX);
+    }
+    return boxGroup;
   }
 };

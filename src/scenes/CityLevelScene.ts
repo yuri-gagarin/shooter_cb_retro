@@ -98,6 +98,10 @@ export default class CityLevelScene extends Phaser.Scene {
     this.player.body.setAllowGravity(false);
     this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 150, this.width * 4, 150));
     // fence foreground //
+    
+
+    this.cityBoxes.create([ this.player ]);
+
     // must be after all character models //
     this.setBackgrounds(
       { scene: this, imageKey: "cityBrick1" },
@@ -107,8 +111,6 @@ export default class CityLevelScene extends Phaser.Scene {
         scrollFactor: { scrollFactorX: 1.25, scrollFactorY: 1.25 }
       }
     );
-
-    this.cityBoxes.create([ this.player ]);
 
     // camera //
     this.cameras.main.setBounds(0, 0, this.width * 4, this.height);

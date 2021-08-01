@@ -1,10 +1,13 @@
 import Phaser from "../lib/phaser";
 // models //
 import { Character } from "../characters/Character";
+// objects - platforms //
+import { CityBoxes } from "../objects/CityBoxes";
 // animations //
 import characterAnimations from "../animations/characterAnimations";
 // types //
 import { PunkAnimation } from "../types_interfaces/abstract/genericUserModel";
+import { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
 
 type BackgroundOpts = {
   position?: { posX?: number; posY?: number; };
@@ -23,9 +26,12 @@ export default class CityLevelScene extends Phaser.Scene {
   private attackKey: Phaser.Input.Keyboard.Key;
   private attackSpecialKey: Phaser.Input.Keyboard.Key;
   private attackChargeKey: Phaser.Input.Keyboard.Key;
+  // objects //
+  private cityBoxes: IObjectLoader;
 
   constructor() {
     super("cityLevelScene");
+    this.cityBoxes = new CityBoxes(this);
   }
 
   preload() {
@@ -40,6 +46,8 @@ export default class CityLevelScene extends Phaser.Scene {
     // characters //
     this.load.spritesheet("punkIdle", "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
     this.cursors = this.input.keyboard.createCursorKeys();
+    // objects //
+    this.cityBoxes.load();
     // ANIMATIONS //
     // animations //
     this.load.spritesheet(PunkAnimation.punkIdle, "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
@@ -83,10 +91,10 @@ export default class CityLevelScene extends Phaser.Scene {
     (
       this, 
       { spriteKey: "punkIdle", xPos: 100, yPos: this.height - 100 }, 
-      { size: { x: 24, y: 48 } }
+      { size: { x: 24, y: 24 } }
     )
     .initialize(characterAnimations.PUNK_ANIMATIONS)
-    .setScale(2).setOffset(0, 10);
+    .setScale(2).setOffset(0, 20);
     this.player.body.setAllowGravity(false);
     this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 150, this.width * 4, 150));
     // fence foreground //
@@ -99,6 +107,8 @@ export default class CityLevelScene extends Phaser.Scene {
         scrollFactor: { scrollFactorX: 1.25, scrollFactorY: 1.25 }
       }
     );
+
+    this.cityBoxes.create([ this.player ]);
 
     // camera //
     this.cameras.main.setBounds(0, 0, this.width * 4, this.height);
@@ -119,12 +129,12 @@ export default class CityLevelScene extends Phaser.Scene {
     if (this.cursors.left.isDown) {
       this.player.flipX = true;
       this.player.setVelocityX(-200);
-      this.player.setOffset(20, 10);
+      this.player.setOffset(20, 20);
       this.player.anims.play(PunkAnimation.punkRun, true);
     } else if (this.cursors.right.isDown) {
       this.player.flipX = false;
       this.player.setVelocityX(200);
-      this.player.setOffset(0, 10);
+      this.player.setOffset(0, 20);
       this.player.anims.play(PunkAnimation.punkRun, true);
     } else if (this.cursors.up.isDown) {
       this.player.setVelocityY(-100);

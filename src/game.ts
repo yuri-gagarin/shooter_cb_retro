@@ -1,6 +1,5 @@
 import Phaser from "./lib/phaser";
 //
-import { Character } from './characters/Character';
 import CityLevelScene from "./scenes/CityLevelScene";
 // types //
 import type { ModelAnimationOpts } from './types_interfaces/abstract/genericUserModel';

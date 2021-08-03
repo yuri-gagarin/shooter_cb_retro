@@ -1,14 +1,16 @@
 import Phaser from "../lib/phaser";
 // models //
-import { Character } from "../characters/Character";
+import { Player } from "../characters/Player";
 // objects - platforms //
 import { CityBoxes } from "../objects/CityBoxes";
 import { CityBarrels } from "../objects/CityBarrels";
 // animations //
-import characterAnimations from "../animations/characterAnimations";
+// loaders //
+import { SpriteSheetLoader } from "../loaders/spriteSheetLoader"; 
+import { bikerSprites } from "../characters/sprites/bikerSprites";
 // types //
-import { PunkAnimation } from "../types_interfaces/abstract/genericUserModel";
 import { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
+import { punkSprites, PunkSpritesAnims } from "../characters/sprites/punkSprites";
 
 type BackgroundOpts = {
   position?: { posX?: number; posY?: number; };
@@ -24,6 +26,8 @@ export default class CityLevelScene extends Phaser.Scene {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   // characters //
   private player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private bikers: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[];
+
   private attackKey: Phaser.Input.Keyboard.Key;
   private attackSpecialKey: Phaser.Input.Keyboard.Key;
   private attackChargeKey: Phaser.Input.Keyboard.Key;
@@ -47,20 +51,16 @@ export default class CityLevelScene extends Phaser.Scene {
     // city bricks //
     this.load.image("cityBrick1", "assets/tiles/bricks/city_brick1.png");
     // characters //
-    this.load.spritesheet("punkIdle", "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
     this.cursors = this.input.keyboard.createCursorKeys();
     // objects //
     this.cityBoxes.load();
     this.cityBarrels.load();
     // ANIMATIONS //
-    // animations //
-    this.load.spritesheet(PunkAnimation.punkIdle, "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet(PunkAnimation.punkRun, "assets/characters/punk/Punk_run.png", { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet(PunkAnimation.punkJump, "assets/characters/punk/Punk_jump.png", { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet(PunkAnimation.punkDoubleJump, "assets/characters/punk/Punk_doublejump.png", { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet(PunkAnimation.punkAttackNormal, "assets/characters/punk/Punk_attack1.png", { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet(PunkAnimation.punkAttackSpecial, "assets/characters/punk/Punk_attack3.png", { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet(PunkAnimation.punkAttackCharge, "assets/characters/punk/Punk_run_attack.png", { frameWidth: 48, frameHeight: 48 });
+    // animations and spritesheets //
+    // biker enemy //
+    SpriteSheetLoader.loadSprites(this, punkSprites);
+    SpriteSheetLoader.loadSprites(this, bikerSprites);
+    // player //
   }
 
   create() {
@@ -91,19 +91,11 @@ export default class CityLevelScene extends Phaser.Scene {
       }
     );
 
-    this.player = new Character
-    (
-      this, 
-      { spriteKey: "punkIdle", xPos: 100, yPos: this.height - 100 }, 
-      { size: { x: 24, y: 24 } }
-    )
-    .initialize(characterAnimations.PUNK_ANIMATIONS)
-    .setScale(2).setOffset(0, 20);
-    this.player.body.setAllowGravity(false);
+    this.player = new Player({ scene: this, sprite: { spriteKey: PunkSpritesAnims.punkIdle, xPos: 100, yPos: this.height - 100 } })
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } })
     this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 150, this.width * 4, 150));
-    // fence foreground //
-    
-
+    // fence foreground ////
+   
     this.cityBoxes.create([ this.player ]);
     this.cityBarrels.create([ this.player ]);
 
@@ -137,24 +129,24 @@ export default class CityLevelScene extends Phaser.Scene {
       this.player.flipX = true;
       this.player.setVelocityX(-200);
       this.player.setOffset(20, 20);
-      this.player.anims.play(PunkAnimation.punkRun, true);
+      this.player.anims.play(PunkSpritesAnims.punkRun, true);
     } else if (this.cursors.right.isDown) {
       this.player.flipX = false;
       this.player.setVelocityX(200);
       this.player.setOffset(0, 20);
-      this.player.anims.play(PunkAnimation.punkRun, true);
+      this.player.anims.play(PunkSpritesAnims.punkRun, true);
     } else if (this.cursors.up.isDown) {
       this.player.setVelocityY(-100);
-      this.player.anims.play(PunkAnimation.punkJump, true);
+      this.player.anims.play(PunkSpritesAnims.punkJump, true);
     } else if (this.cursors.down.isDown) {
       this.player.setVelocityY(100);
-      this.player.anims.play(PunkAnimation.punkJump, true);
+      this.player.anims.play(PunkSpritesAnims.punkJump, true);
     } else if (this.attackKey.isDown) {
-      this.player.anims.play(PunkAnimation.punkAttackNormal, true);
+      this.player.anims.play(PunkSpritesAnims.punkAttackNormal, true);
     } else if (this.attackSpecialKey.isDown) {
-      this.player.anims.play(PunkAnimation.punkAttackSpecial, true);
+      this.player.anims.play(PunkSpritesAnims.punkAttackSpecial, true);
     } else if (this.attackChargeKey.isDown) {
-      this.player.anims.play(PunkAnimation.punkAttackCharge, true);
+      this.player.anims.play(PunkSpritesAnims.punkAttackCharge, true);
       this.slideCharacter(10, this.player);
     } else {
       this.player.setVelocityX(0);
@@ -188,28 +180,28 @@ export default class CityLevelScene extends Phaser.Scene {
 
   private checkPlayerIdle(): void {
     if (!this.cursors.up.isDown && !this.cursors.right.isDown && !this.cursors.down.isDown && !this.cursors.left.isDown && !this.attackKey.isDown) {
-      if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkAnimation.punkAttackSpecial) {
+      if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkAttackSpecial) {
         if (this.player.anims.isPlaying) {
           return;
         } else {
-          this.player.anims.play(PunkAnimation.punkIdle);
+          this.player.anims.play(PunkSpritesAnims.punkIdle);
         }
-      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkAnimation.punkAttackNormal) {
+      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkAttackNormal) {
         if (this.player.anims.isPlaying) {
           return;
         } else {
-          this.player.anims.play(PunkAnimation.punkIdle);
+          this.player.anims.play(PunkSpritesAnims.punkIdle);
         }
-      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkAnimation.punkAttackCharge) {
+      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkAttackCharge) {
         if (this.player.anims.isPlaying) {
           return;
         } else {
-          this.player.anims.play(PunkAnimation.punkIdle);
+          this.player.anims.play(PunkSpritesAnims.punkIdle);
         }
-      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkAnimation.punkIdle && this.player.anims.isPlaying) {
+      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkIdle && this.player.anims.isPlaying) {
         return;
       } else {
-        this.player.anims.play(PunkAnimation.punkIdle);
+        this.player.anims.play(PunkSpritesAnims.punkIdle);
       }
     } else {
       return;

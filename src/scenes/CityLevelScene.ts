@@ -7,10 +7,11 @@ import { CityBarrels } from "../objects/CityBarrels";
 // animations //
 // loaders //
 import { SpriteSheetLoader } from "../loaders/spriteSheetLoader"; 
-import { bikerSprites } from "../characters/sprites/bikerSprites";
+import { bikerSprites, BikerSpritesAnims } from "../characters/sprites/bikerSprites";
 // types //
 import { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
 import { punkSprites, PunkSpritesAnims } from "../characters/sprites/punkSprites";
+import { Biker } from "../characters/Biker";
 
 type BackgroundOpts = {
   position?: { posX?: number; posY?: number; };
@@ -91,9 +92,18 @@ export default class CityLevelScene extends Phaser.Scene {
       }
     );
 
+    // player model //
     this.player = new Player({ scene: this, sprite: { spriteKey: PunkSpritesAnims.punkIdle, xPos: 100, yPos: this.height - 100 } })
-      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } })
-    this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 150, this.width * 4, 150));
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });
+    this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 175, this.width * 4, 125));
+
+    // enemies //
+    const enemy1 = new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 200, yPos: this.height - 110 } })
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });
+
+    const enemy2 = new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 310, yPos: this.height - 115 } })
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: {x: 0, y: 20 } });
+  
     // fence foreground ////
    
     this.cityBoxes.create([ this.player ]);

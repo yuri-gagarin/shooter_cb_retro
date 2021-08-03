@@ -1,9 +1,10 @@
 import { Scene } from "phaser";
-import { BikerSpritesAnims } from "../../characters/sprites/bikerSprites";
-import { PunkSpritesAnims } from "../../characters/sprites/punkSprites";
+import type { BikerSpritesAnims } from "../../characters/sprites/bikerSprites";
+import type { CyborgSpritesAnims } from "../../characters/sprites/cyborgSprites";
+import type { PunkSpritesAnims } from "../../characters/sprites/punkSprites";
 
 export type ModelAnimationOpts = {
-  key: PunkSpritesAnims | BikerSpritesAnims;
+  key: PunkSpritesAnims | BikerSpritesAnims | CyborgSpritesAnims;
   spriteName?: string;
   frameStart?: number;
   frameEnd?: number;
@@ -79,7 +80,7 @@ export abstract class GenericUserModel {
       }
     }
     
-    return this.model
+    return this.model;
   };
 
   protected initializeModelAnimations(modelAnimations?: Array<ModelAnimationOpts>): void {

@@ -6,6 +6,7 @@ import type { IObjectLoader } from "../types_interfaces/abstract/genericObjectLo
 
 type CityBoxSetArg = {
   spriteKey: string;
+  colliders?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[];
   numberOfBoxes: number;
   width: number;
   height: number;
@@ -34,45 +35,27 @@ export class CityBoxes extends GenericObjectLoader implements IObjectLoader {
     this.scene.load.image(CityStreetObjects.boxIron, "assets/objects/Box8.png");
   }
   public create(characters: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[]) {
-    /*
-    const first = this.scene.add.image(100, 500, CityStreetObjects.boxIron).setScale(2);
-    const second = this.scene.add.image(first.x + first.width*2, 500, CityStreetObjects.boxIron).setScale(2);
-
-    console.log(first.input.hitArea)
-    const platforms = this.scene.physics.add.staticGroup()
-    platforms.add(first);
-    platforms.add(second);
-    this.scene.physics.world.addCollider(platforms, characters);
-    console.log(this.scene.cameras.main.width);
-    */
-    const ironBoxGroup = this.scene.physics.add.group({ defaultKey: CityStreetObjects.boxIron, collideWorldBounds: true });
-
-
-    (function(scene: Phaser.Scene) {
-      const boxWidth = 28;
-      const boxHeight = 20
-      //ironBoxGroup.create(100, 550).setSize(boxWidth, boxHeight, true).setScale(1.5).setOffset(4, 10).body.setAllowGravity(false).setImmovable(true);
-      //ironBoxGroup.create(100 + (boxWidth * 1.5), 550).setSize(boxWidth, boxHeight, true).setScale(1.5).setOffset(0, 10).body.setAllowGravity(false).setImmovable(true);
-
-      let posX = 100;
-      for (let i = 0; i < 3; i++) {
-        ironBoxGroup.create(posX, 550).setSize(boxWidth, boxHeight, true).setScale(1.5).setOffset(4, 10).body.setAllowGravity(false).setImmovable(true);
-        posX = posX + (boxWidth * 1.5);
-        console.log(posX)
-      }
-      scene.physics.add.collider(ironBoxGroup, characters);
-
-    })(this.scene);
-
-    const secondBoxSet = this.setBoxes({ 
-      spriteKey: CityStreetObjects.boxIron, numberOfBoxes: 2, posX: 500, posY: 480, width: 28, height: 20, scaleX: 1.5, scaleY: 1.5, offsetX: 4, offsetY: 10 
-    });
-    const thirdBoxSet = this.setBoxes({
-      spriteKey: CityStreetObjects.boxIron, numberOfBoxes: 2, posX: 300, posY: 570, width: 28, height: 20, scaleX: 1.5, scaleY: 1.5, offsetX: 4, offsetY: 10 
+  
+    const firstBoxSet = this.setBoxes({
+      spriteKey: CityStreetObjects.boxIron, colliders: characters, numberOfBoxes: 3, posX: 0, posY: 550, width: 28, height: 20, scaleX: 1.5, scaleY: 1.5, offsetX: 4, offsetY: 10 
     })
+    const secondBoxSet = this.setBoxes({
+      spriteKey: CityStreetObjects.boxIron, colliders: characters, numberOfBoxes: 2, posX: 300, posY: 570, width: 28, height: 20, scaleX: 1.7, scaleY: 1.7, offsetX: 4, offsetY: 10 
+    });
+    //
+    const thirdBoxSet = this.setBoxes({ 
+      spriteKey: CityStreetObjects.boxIron, colliders: characters, numberOfBoxes: 3, posX: 500, posY: 500, width: 28, height: 20, scaleX: 1.2, scaleY: 1.4, offsetX: 4, offsetY: 10 
+    });
+    const thirdBoxSetTop = this.setBoxes({
+      spriteKey: CityStreetObjects.boxPaperOpen, numberOfBoxes: 2, posX: 520, posY: 480, width: 28, height: 28, offsetY: 10 
+    });
+    const thirdBoxSetRight = this.setBoxes({
+      spriteKey: CityStreetObjects.boxWood2, colliders: characters, numberOfBoxes: 1, posX: 600, posY: 505, width: 28, height: 18, offsetY: 10
+    });
+    // 
   }
 
-  private setBoxes({ spriteKey, numberOfBoxes, posX, posY, width, height, scaleX = 1, scaleY = 1, offsetX = 0.5, offsetY = 0.5, immovable = true }: CityBoxSetArg): Phaser.Physics.Arcade.Group {
+  private setBoxes({ spriteKey, colliders, numberOfBoxes, posX, posY, width, height, scaleX = 1, scaleY = 1, offsetX = 0.5, offsetY = 0.5, immovable = true }: CityBoxSetArg): Phaser.Physics.Arcade.Group {
     let boxX = posX;
     let boxY = posY;
     const boxGroup = this.scene.physics.add.group({ defaultKey: spriteKey, collideWorldBounds: true });
@@ -80,6 +63,9 @@ export class CityBoxes extends GenericObjectLoader implements IObjectLoader {
       boxGroup.create(boxX, boxY).setSize(width, height).setScale(scaleX, scaleY).setOffset(offsetX, offsetY).body.setAllowGravity(false).setImmovable(immovable);
       boxX = boxX + (width * scaleX);
     }
+
+    if (colliders) this.scene.physics.world.addCollider(boxGroup, colliders);
+
     return boxGroup;
   }
 };

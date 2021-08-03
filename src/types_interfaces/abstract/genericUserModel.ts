@@ -28,7 +28,7 @@ export type CharacterOpts = {
 };
 
 export interface IGameCharacterModel {
-  update: () => void;
+  update: (...args: any) => void;
 }
 export abstract class GenericUserModel {
   protected scene: Scene;
@@ -39,7 +39,7 @@ export abstract class GenericUserModel {
     this.initializeModelSprite(sprite);
   };
 
-  public initialize(characterOpts?: CharacterOpts): Phaser.Types.Physics.Arcade.SpriteWithDynamicBody {
+  public initialize(characterOpts?: CharacterOpts) {
     if (characterOpts) {
       // bounce options //
       const { x: bounceX = 0, y: bounceY = 0 } = characterOpts.bounce ? characterOpts.bounce : {};
@@ -79,8 +79,7 @@ export abstract class GenericUserModel {
         this.model.body.setAllowGravity(false);
       }
     }
-    
-    return this.model;
+    return this;
   };
 
   protected initializeModelAnimations(modelAnimations?: Array<ModelAnimationOpts>): void {

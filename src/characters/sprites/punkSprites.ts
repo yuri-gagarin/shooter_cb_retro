@@ -18,7 +18,7 @@ export const punkSpritesUrls = {
   [PunkSpritesAnims.punkDoubleJump]: "assets/characters/punk/Punk_doublejump.png",
   [PunkSpritesAnims.punkAttackSpecial]: "assets/characters/punk/Punk_attack3.png",
   [PunkSpritesAnims.punkAttackNormal]: "assets/characters/punk/Punk_attack1.png",
-  [PunkSpritesAnims.punkAttackCharge]: "assets/characters/punk/Punk_run attack.png"
+  [PunkSpritesAnims.punkAttackCharge]: "assets/characters/punk/Punk_run_attack.png"
 };
 
 export const punkSprites: SpriteSheetLoaderOpts = {

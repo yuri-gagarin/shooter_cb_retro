@@ -36,8 +36,6 @@ export abstract class GenericObjectLoader {
       objectGroup.create(objectX, objectY).setSize(width, height).setScale(scaleX, scaleY).setOffset(offsetX, offsetY).body.setAllowGravity(allowGravity).setImmovable(immovable);
       objectX = objectX + (width * scaleX);
     }
-    console.log(objectGroup)
-    console.log(colliders);
     if (colliders) this.scene.physics.world.addCollider(objectGroup, colliders);
 
     return objectGroup;

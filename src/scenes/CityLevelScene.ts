@@ -12,6 +12,7 @@ import { bikerSprites, BikerSpritesAnims } from "../characters/sprites/bikerSpri
 import { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
 import { punkSprites, PunkSpritesAnims } from "../characters/sprites/punkSprites";
 import { Biker } from "../characters/Biker";
+import { GenericUserModel } from "../types_interfaces/abstract/genericUserModel";
 
 type BackgroundOpts = {
   position?: { posX?: number; posY?: number; };
@@ -26,7 +27,7 @@ export default class CityLevelScene extends Phaser.Scene {
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   // characters //
-  private player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private player: Player;
   private bikers: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[];
 
   private attackKey: Phaser.Input.Keyboard.Key;
@@ -95,19 +96,20 @@ export default class CityLevelScene extends Phaser.Scene {
     // player model //
     this.player = new Player({ scene: this, sprite: { spriteKey: PunkSpritesAnims.punkIdle, xPos: 100, yPos: this.height - 100 } })
       .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });
-    this.player.body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 175, this.width * 4, 125));
-
+    this.player.getModel().body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 175, this.width * 4, 125));
+  
+    /*
     // enemies //
     const enemy1 = new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 200, yPos: this.height - 110 } })
       .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });
 
     const enemy2 = new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 310, yPos: this.height - 115 } })
       .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: {x: 0, y: 20 } });
-  
+    */
     // fence foreground ////
-   
-    this.cityBoxes.create([ this.player ]);
-    this.cityBarrels.create([ this.player ]);
+    console.log("here")
+    this.cityBoxes.create([ this.player.getModel() ]);
+    this.cityBarrels.create([ this.player.getModel() ]);
 
     // must be after all character models //
     this.setBackgrounds(
@@ -124,7 +126,7 @@ export default class CityLevelScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, this.width * 4, this.height);
 
     // follow player //
-    this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+    this.cameras.main.startFollow(this.player.getModel(), true, 0.08, 0.08);
 
     // keys //
     this.attackKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -133,37 +135,7 @@ export default class CityLevelScene extends Phaser.Scene {
   }
 
   update() {
-    this.checkPlayerIdle();
-
-    if (this.cursors.left.isDown) {
-      this.player.flipX = true;
-      this.player.setVelocityX(-200);
-      this.player.setOffset(20, 20);
-      this.player.anims.play(PunkSpritesAnims.punkRun, true);
-    } else if (this.cursors.right.isDown) {
-      this.player.flipX = false;
-      this.player.setVelocityX(200);
-      this.player.setOffset(0, 20);
-      this.player.anims.play(PunkSpritesAnims.punkRun, true);
-    } else if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-100);
-      this.player.anims.play(PunkSpritesAnims.punkJump, true);
-    } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(100);
-      this.player.anims.play(PunkSpritesAnims.punkJump, true);
-    } else if (this.attackKey.isDown) {
-      this.player.anims.play(PunkSpritesAnims.punkAttackNormal, true);
-    } else if (this.attackSpecialKey.isDown) {
-      this.player.anims.play(PunkSpritesAnims.punkAttackSpecial, true);
-    } else if (this.attackChargeKey.isDown) {
-      this.player.anims.play(PunkSpritesAnims.punkAttackCharge, true);
-      this.slideCharacter(10, this.player);
-    } else {
-      this.player.setVelocityX(0);
-      this.player.setVelocityY(0);
-    }
-
-   
+    this.player.update(this.cursors, this.attackKey, this.attackSpecialKey, this.attackChargeKey);
   }
 
   private setBackgrounds({ scene, imageKey }: { scene: Phaser.Scene; imageKey: string }, imageOpts?: BackgroundOpts): void {
@@ -186,48 +158,6 @@ export default class CityLevelScene extends Phaser.Scene {
       currentBGSpan = currentBGSpan + (bgImgTemp.width * scaleX);
 
     } while (currentBGSpan < ((this.width * 4) + 400))
-  }
-
-  private checkPlayerIdle(): void {
-    if (!this.cursors.up.isDown && !this.cursors.right.isDown && !this.cursors.down.isDown && !this.cursors.left.isDown && !this.attackKey.isDown) {
-      if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkAttackSpecial) {
-        if (this.player.anims.isPlaying) {
-          return;
-        } else {
-          this.player.anims.play(PunkSpritesAnims.punkIdle);
-        }
-      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkAttackNormal) {
-        if (this.player.anims.isPlaying) {
-          return;
-        } else {
-          this.player.anims.play(PunkSpritesAnims.punkIdle);
-        }
-      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkAttackCharge) {
-        if (this.player.anims.isPlaying) {
-          return;
-        } else {
-          this.player.anims.play(PunkSpritesAnims.punkIdle);
-        }
-      } else if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === PunkSpritesAnims.punkIdle && this.player.anims.isPlaying) {
-        return;
-      } else {
-        this.player.anims.play(PunkSpritesAnims.punkIdle);
-      }
-    } else {
-      return;
-    } 
-  }
-
-  private slideCharacter(xValue: number, character: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, interval?: number) {
-    let timer: number = 0;
-    const increment = interval ? interval : 100;
-    const slider = character.flipX ? - 5 : 5;
-    for (let i = 0; i < xValue; i += 5) {
-      setTimeout(() => {
-        character.setX(character.x + slider);
-      }, timer);
-      timer += increment;
-    }
   }
 };
 

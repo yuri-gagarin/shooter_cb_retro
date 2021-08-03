@@ -3,6 +3,7 @@ import Phaser from "../lib/phaser";
 import { Character } from "../characters/Character";
 // objects - platforms //
 import { CityBoxes } from "../objects/CityBoxes";
+import { CityBarrels } from "../objects/CityBarrels";
 // animations //
 import characterAnimations from "../animations/characterAnimations";
 // types //
@@ -28,10 +29,12 @@ export default class CityLevelScene extends Phaser.Scene {
   private attackChargeKey: Phaser.Input.Keyboard.Key;
   // objects //
   private cityBoxes: IObjectLoader;
+  private cityBarrels: IObjectLoader;
 
   constructor() {
     super("cityLevelScene");
     this.cityBoxes = new CityBoxes(this);
+    this.cityBarrels = new CityBarrels(this);
   }
 
   preload() {
@@ -48,6 +51,7 @@ export default class CityLevelScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     // objects //
     this.cityBoxes.load();
+    this.cityBarrels.load();
     // ANIMATIONS //
     // animations //
     this.load.spritesheet(PunkAnimation.punkIdle, "assets/characters/punk/Punk_idle.png", { frameWidth: 48, frameHeight: 48 });
@@ -101,6 +105,7 @@ export default class CityLevelScene extends Phaser.Scene {
     
 
     this.cityBoxes.create([ this.player ]);
+    this.cityBarrels.create([ this.player ]);
 
     // must be after all character models //
     this.setBackgrounds(

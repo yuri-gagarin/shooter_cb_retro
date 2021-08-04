@@ -2,9 +2,10 @@ import { Scene } from "phaser";
 import type { BikerSpritesAnims } from "../../characters/sprites/bikerSprites";
 import type { CyborgSpritesAnims } from "../../characters/sprites/cyborgSprites";
 import type { PunkSpritesAnims } from "../../characters/sprites/punkSprites";
+import type { LaserSpritesAnims } from "../../effects/sprites/laserSprites";
 
 export type ModelAnimationOpts = {
-  key: PunkSpritesAnims | BikerSpritesAnims | CyborgSpritesAnims;
+  key: PunkSpritesAnims | BikerSpritesAnims | CyborgSpritesAnims | LaserSpritesAnims;
   spriteName?: string;
   frameStart?: number;
   frameEnd?: number;
@@ -16,7 +17,7 @@ export type ModelAnimationOpts = {
 export type CharacterSprite = {
   xPos: number;
   yPos: number;
-  spriteKey: PunkSpritesAnims | BikerSpritesAnims | CyborgSpritesAnims;
+  spriteKey: PunkSpritesAnims | BikerSpritesAnims | CyborgSpritesAnims | LaserSpritesAnims;
 };
 
 export type CharacterOpts = {

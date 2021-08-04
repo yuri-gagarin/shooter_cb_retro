@@ -68,6 +68,6 @@ export class Biker extends GenericUserModel implements IGameCharacterModel {
       this.model.flipX = false;
     }
     this.model.setVelocity(0, 0);
-    this.model.anims.play(BikerSpritesAnims.bikerAttack3, true);
+    this.model.anims.play(BikerSpritesAnims.bikerAttack2, true);
   }
 };

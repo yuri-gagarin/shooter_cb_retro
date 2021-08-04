@@ -16,7 +16,7 @@ export type ModelAnimationOpts = {
 export type CharacterSprite = {
   xPos: number;
   yPos: number;
-  spriteKey: PunkSpritesAnims | BikerSpritesAnims;
+  spriteKey: PunkSpritesAnims | BikerSpritesAnims | CyborgSpritesAnims;
 };
 
 export type CharacterOpts = {

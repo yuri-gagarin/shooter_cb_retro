@@ -1,18 +1,19 @@
 import Phaser from "../lib/phaser";
 // models //
 import { Player } from "../characters/Player";
+import { Biker } from "../characters/Biker";
+import { Cyborg } from "../characters/Cyborg";
 // objects - platforms //
 import { CityBoxes } from "../objects/CityBoxes";
 import { CityBarrels } from "../objects/CityBarrels";
 // animations //
+import { punkSprites, PunkSpritesAnims } from "../characters/sprites/punkSprites";
+import { cyborgSprites, CyborgSpritesAnims } from "../characters/sprites/cyborgSprites";
+import { bikerSprites, BikerSpritesAnims } from "../characters/sprites/bikerSprites";
 // loaders //
 import { SpriteSheetLoader } from "../loaders/spriteSheetLoader"; 
-import { bikerSprites, BikerSpritesAnims } from "../characters/sprites/bikerSprites";
-// types //
 import { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
-import { punkSprites, PunkSpritesAnims } from "../characters/sprites/punkSprites";
-import { Biker } from "../characters/Biker";
-import { GenericUserModel } from "../types_interfaces/abstract/genericUserModel";
+// types //
 
 type BackgroundOpts = {
   position?: { posX?: number; posY?: number; };
@@ -28,7 +29,8 @@ export default class CityLevelScene extends Phaser.Scene {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   // characters //
   private player: Player;
-  private bikers: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[];
+  private bikers: Biker[] = [];
+  private cyborgs: Cyborg[] = [];
 
   private attackKey: Phaser.Input.Keyboard.Key;
   private attackSpecialKey: Phaser.Input.Keyboard.Key;
@@ -62,6 +64,7 @@ export default class CityLevelScene extends Phaser.Scene {
     // biker enemy //
     SpriteSheetLoader.loadSprites(this, punkSprites);
     SpriteSheetLoader.loadSprites(this, bikerSprites);
+    SpriteSheetLoader.loadSprites(this, cyborgSprites);
     // player //
   }
 
@@ -98,18 +101,26 @@ export default class CityLevelScene extends Phaser.Scene {
       .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });
     this.player.getModel().body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 175, this.width * 4, 125));
   
-    /*
     // enemies //
-    const enemy1 = new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 200, yPos: this.height - 110 } })
-      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });
+    // bikers //
+    this.bikers.push(new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 720, yPos: this.height - 65 } })
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } })
+    );
+    this.bikers.push(new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 830, yPos: this.height - 115 } })
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: {x: 0, y: 20 } })
+    );
+    this.bikers.push(new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 1010, yPos: this.height - 115 } })
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: {x: 0, y: 20 } })
+    );
+    // cyborgs //
+    this.cyborgs.push(new Cyborg({ scene: this, sprite: { spriteKey: CyborgSpritesAnims.cyborgIdle, xPos: 1410, yPos: this.height - 115 } })
+      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: {x: 0, y: 20 } })
+    )
 
-    const enemy2 = new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 310, yPos: this.height - 115 } })
-      .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: {x: 0, y: 20 } });
-    */
     // fence foreground ////
-    console.log("here")
-    this.cityBoxes.create([ this.player.getModel() ]);
-    this.cityBarrels.create([ this.player.getModel() ]);
+    const bikerModels = this.bikers.map((biker) => biker.getModel());
+    this.cityBoxes.create([ this.player.getModel() ].concat(bikerModels));
+    this.cityBarrels.create([ this.player.getModel() ].concat(bikerModels));
 
     // must be after all character models //
     this.setBackgrounds(
@@ -136,6 +147,13 @@ export default class CityLevelScene extends Phaser.Scene {
 
   update() {
     this.player.update(this.cursors, this.attackKey, this.attackSpecialKey, this.attackChargeKey);
+    // console.log(this.cameras.main.scrollX)
+    for (const biker of this.bikers) {
+      biker.update(this.player);
+    }
+    for (const cyborg of this.cyborgs) {
+      cyborg.update();
+    }
   }
 
   private setBackgrounds({ scene, imageKey }: { scene: Phaser.Scene; imageKey: string }, imageOpts?: BackgroundOpts): void {

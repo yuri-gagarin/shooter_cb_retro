@@ -42,5 +42,5 @@ export const bikerAnimations: ModelAnimationOpts[] = [
   { key: BikerSpritesAnims.bikerDeath, frameStart: 0, frameEnd: 5, frameRate: 10 },
   { key: BikerSpritesAnims.bikerHurt, frames: [ 0, 1, 0, 1, 0, 1, 0 ], frameRate: 10 },
   { key: BikerSpritesAnims.bikerIdle, frameStart: 0, frameEnd: 3, repeat: true },
-  { key: BikerSpritesAnims.bikerRun, frameStart: 0, frameEnd: 5, repeat: true }
+  { key: BikerSpritesAnims.bikerRun, frameStart: 0, frameEnd: 5, repeat: true, frameRate: 10 }
 ];

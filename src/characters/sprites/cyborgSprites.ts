@@ -15,13 +15,13 @@ export const cyborgSpritesUrls = {
   [CyborgSpritesAnims.cyborgAttack1]: "assets/characters/cyborg/Cyborg_attack1.png",
   [CyborgSpritesAnims.cyborgAttack2]: "assets/characters/cyborg/Cyborg_attack2.png",
   [CyborgSpritesAnims.cyborgAttack3]: "assets/characters/cyborg/Cyborg_attack3.png",
-  [CyborgSpritesAnims.cyborgDeath]: "assets/characters/cyborg/cyborg_death.png",
-  [CyborgSpritesAnims.cyborgHurt]: "assets/characters/cyborg/cyborg_hurt.png",
-  [CyborgSpritesAnims.cyborgIdle]: "assets/characters/cyborg/cyborg_idle.png",
-  [CyborgSpritesAnims.cyborgRun]: "assets/characters/cyborg/cyborg_run.png"
+  [CyborgSpritesAnims.cyborgDeath]: "assets/characters/cyborg/Cyborg_death.png",
+  [CyborgSpritesAnims.cyborgHurt]: "assets/characters/cyborg/Cyborg_hurt.png",
+  [CyborgSpritesAnims.cyborgIdle]: "assets/characters/cyborg/Cyborg_idle.png",
+  [CyborgSpritesAnims.cyborgRun]: "assets/characters/cyborg/Cyborg_run.png"
 };
 
-export const bikerSprites: SpriteSheetLoaderOpts = {
+export const cyborgSprites: SpriteSheetLoaderOpts = {
   sprites: [
     { spriteKey: CyborgSpritesAnims.cyborgAttack1, spriteUrl: cyborgSpritesUrls.cyborgAttack1 },
     { spriteKey: CyborgSpritesAnims.cyborgAttack2, spriteUrl: cyborgSpritesUrls.cyborgAttack2 },

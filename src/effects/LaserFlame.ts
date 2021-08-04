@@ -1,16 +1,63 @@
-import { GenericUserModel } from "../types_interfaces/abstract/genericUserModel";
-import type { CharacterSprite } from "../types_interfaces/abstract/genericUserModel";
-import type { Scene } from "phaser";
-import { LaserAnimEffects, LaserSpritesAnims } from "./sprites/laserSprites";
+import { Scene, Tilemaps } from "phaser";
+import type { Player } from "../characters/Player";
 
 
-
-export class LaserFlame extends  GenericUserModel {
-  constructor({ scene, sprite }: { scene: Scene, sprite: CharacterSprite }) {
-    super(scene, sprite);
-    this.createLaserAnimations();
+export class Laser extends Phaser.Physics.Arcade.Sprite {
+  constructor(scene: Scene, x: number, y: number, spriteTexture: string) {
+    super(scene, x, y, spriteTexture);
   }
 
+  public fire(x: number, y: number): void {
+    this.body.reset(x, y);
+    this.setActive(true);
+    this.setVisible(true);
+    this.setVelocityX(300);
+    console.log(this.body.allowGravity)
+  }
+
+  public preUpdate(t: number, d: number): void {
+    super.preUpdate(t, d);
+    if (this.x > this.scene.cameras.main.scrollX + 400) {
+      this.setActive(false);
+      this.setVisible(false);
+    }
+  }
+};
+
+export class LaserGroup extends Phaser.Physics.Arcade.Group {
+  constructor(scene: Scene, spriteTexture: string) {
+    super(scene.physics.world, scene);
+    //
+    this.createMultiple({
+      classType: Laser,
+      frameQuantity: 30,
+      active: false,
+      visible: false,
+      key: spriteTexture,
+    });
+  }
+
+  public fireLaser(model: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody): void {
+    const laser = this.getFirstDead(false);
+    if (laser) {
+      const { x, y } = model.body;
+      laser.fire(x, y)
+    }
+  }
+}
+
+
+
+/*
+export class LaserGroup extends Phaser.Physics.Arcade.Group {
+  public ownerClass: Player;
+  constructor(scene: Scene) {
+    super(scene.physics.world, scene);
+    this.createLaserAnimations();
+    ths
+  }
+
+  /*
   private createLaserAnimations(): void {
     this.model.anims.create({
       key: LaserAnimEffects.redYellowLaser,
@@ -46,4 +93,6 @@ export class LaserFlame extends  GenericUserModel {
       repeat: -1
     });
   }
+
 };
+*/

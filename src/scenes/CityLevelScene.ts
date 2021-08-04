@@ -13,6 +13,8 @@ import { bikerSprites, BikerSpritesAnims } from "../characters/sprites/bikerSpri
 // loaders //
 import { SpriteSheetLoader } from "../loaders/spriteSheetLoader"; 
 import { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
+import { LaserGroup } from "../effects/LaserFlame";
+import { laserSprites, LaserSpritesAnims } from "../effects/sprites/laserSprites";
 // types //
 
 type BackgroundOpts = {
@@ -25,7 +27,6 @@ type BackgroundOpts = {
 export default class CityLevelScene extends Phaser.Scene {
   private width: number;
   private height: number;
-
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   // characters //
   private player: Player;
@@ -35,9 +36,13 @@ export default class CityLevelScene extends Phaser.Scene {
   private attackKey: Phaser.Input.Keyboard.Key;
   private attackSpecialKey: Phaser.Input.Keyboard.Key;
   private attackChargeKey: Phaser.Input.Keyboard.Key;
+  private inputKeys: Phaser.Input.Keyboard.Key[] = [];
+
   // objects //
   private cityBoxes: IObjectLoader;
   private cityBarrels: IObjectLoader;
+  // effects - weapons //
+  private playerLaserGroup: LaserGroup;
 
   constructor() {
     super("cityLevelScene");
@@ -65,6 +70,7 @@ export default class CityLevelScene extends Phaser.Scene {
     SpriteSheetLoader.loadSprites(this, punkSprites);
     SpriteSheetLoader.loadSprites(this, bikerSprites);
     SpriteSheetLoader.loadSprites(this, cyborgSprites);
+    SpriteSheetLoader.loadSprites(this, laserSprites);
     // player //
   }
 
@@ -100,7 +106,8 @@ export default class CityLevelScene extends Phaser.Scene {
     this.player = new Player({ scene: this, sprite: { spriteKey: PunkSpritesAnims.punkIdle, xPos: 100, yPos: this.height - 100 } })
       .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });
     this.player.getModel().body.setBoundsRectangle(new Phaser.Geom.Rectangle(10, this.height / 2 + 175, this.width * 4, 125));
-  
+    this.player.setWeaponEffects([ new LaserGroup(this, LaserSpritesAnims.laserFlameBlue) ])
+    
     // enemies //
     // bikers //
     this.bikers.push(new Biker({ scene: this, sprite: { spriteKey: BikerSpritesAnims.bikerIdle, xPos: 720, yPos: this.height - 65 } })
@@ -115,8 +122,10 @@ export default class CityLevelScene extends Phaser.Scene {
     // cyborgs //
     this.cyborgs.push(new Cyborg({ scene: this, sprite: { spriteKey: CyborgSpritesAnims.cyborgIdle, xPos: 1410, yPos: this.height - 115 } })
       .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: {x: 0, y: 20 } })
-    )
+    );
 
+    // effects weapons //
+    this.playerLaserGroup = new LaserGroup(this, LaserSpritesAnims.laserFlameBlue);
     // fence foreground ////
     const bikerModels = this.bikers.map((biker) => biker.getModel());
     this.cityBoxes.create([ this.player.getModel() ].concat(bikerModels));
@@ -143,6 +152,8 @@ export default class CityLevelScene extends Phaser.Scene {
     this.attackKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.attackSpecialKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.attackChargeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
+    this.addEvents();
   }
 
   update() {
@@ -153,6 +164,12 @@ export default class CityLevelScene extends Phaser.Scene {
     }
     for (const cyborg of this.cyborgs) {
       cyborg.update();
+    }
+
+    for (const inputKey of this.inputKeys) {
+      if (Phaser.Input.Keyboard.JustDown(inputKey)) {
+        this.player.fireAttack();
+      }
     }
   }
 
@@ -176,6 +193,14 @@ export default class CityLevelScene extends Phaser.Scene {
       currentBGSpan = currentBGSpan + (bgImgTemp.width * scaleX);
 
     } while (currentBGSpan < ((this.width * 4) + 400))
+  }
+
+  private addEvents(): void {
+    this.inputKeys = [
+      this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+      this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+      this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
+    ];
   }
 };
 

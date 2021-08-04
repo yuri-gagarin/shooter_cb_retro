@@ -1,9 +1,11 @@
 import { Scene } from "phaser";
+import { GenericUserModel } from "../types_interfaces/abstract/genericUserModel";
 // animations //
 import { punkAnimations, PunkSpritesAnims } from "./sprites/punkSprites";
 // types //
 import type { CharacterSprite, IGameCharacterModel } from "../types_interfaces/abstract/genericUserModel";
-import { GenericUserModel } from "../types_interfaces/abstract/genericUserModel";
+import { LaserGroup } from "../effects/LaserFlame";
+// import type { LaserFlame } from "../effects/LaserFlame";
 
 export type CharacterSpriteOpts = {
   sprites: [ { spriteUrl: string; spriteKey: string; }];
@@ -11,6 +13,8 @@ export type CharacterSpriteOpts = {
   frameHeight: number;
 }
 export class Player extends GenericUserModel implements IGameCharacterModel {
+  //private laserFlames: LaserFlame[] = [];
+  private weaponEffects: LaserGroup[] = [];
   constructor ({ scene, sprite }: { scene: Scene, sprite: CharacterSprite }) {
     super(scene, sprite);
     this.initializeModelAnimations(punkAnimations)
@@ -46,6 +50,17 @@ export class Player extends GenericUserModel implements IGameCharacterModel {
       this.model.setVelocityX(0);
       this.model.setVelocityY(0);
     }
+  }
+
+  public setWeaponEffects(weaponEffects: LaserGroup[]): void {
+    this.weaponEffects = weaponEffects;
+    this.weaponEffects[0].world.gravity.setTo(0, 0);
+  }
+
+  public fireAttack(): void {
+    if (this.weaponEffects && this.weaponEffects[0]) {
+      this.weaponEffects[0].fireLaser(this.model);
+    } 
   }
   
 

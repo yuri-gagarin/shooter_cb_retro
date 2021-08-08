@@ -40,8 +40,8 @@ export const laserSprites: SpriteSheetLoaderOpts = {
     { spriteKey: LaserSpritesAnims.laserFlameLightGreen, spriteUrl: laserSpritesUrls.laserFlameLightGreen },
     { spriteKey: LaserSpritesAnims.laserFlameBrightGreen1, spriteUrl: laserSpritesUrls.laserFlameBrightGreen1 },
   ],
-  frameWidth: 127,
-  frameHeight: 123
+  frameWidth: 100,
+  frameHeight: 100
 };
 /*
 export const laserAnimations: ModelAnimationOpts[] = [

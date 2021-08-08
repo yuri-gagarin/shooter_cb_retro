@@ -10,6 +10,7 @@ import { CityBarrels } from "../objects/CityBarrels";
 import { punkSprites, PunkSpritesAnims } from "../characters/sprites/punkSprites";
 import { cyborgSprites, CyborgSpritesAnims } from "../characters/sprites/cyborgSprites";
 import { bikerSprites, BikerSpritesAnims } from "../characters/sprites/bikerSprites";
+import { LaserAnimEffects } from "../effects/sprites/laserSprites";
 // loaders //
 import { SpriteSheetLoader } from "../loaders/spriteSheetLoader"; 
 import { IObjectLoader } from "../types_interfaces/abstract/genericObjectLoader";
@@ -101,7 +102,17 @@ export default class CityLevelScene extends Phaser.Scene {
         scrollFactor: { scrollFactorX: 1, scrollFactorY: 1 } 
       }
     );
-
+    // general animations //
+    this.anims.create({
+      key: LaserAnimEffects.redYellowLaser,
+      frames: [
+        { key: LaserSpritesAnims.laserFlameRed, frame: 0 },
+        { key: LaserSpritesAnims.laserFlameLightBlue, frame: 0 },
+        { key: LaserSpritesAnims.laserFlameYellow, frame: 0 }
+      ],
+      frameRate: 15,
+      repeat: -1
+    });
     // player model //
     this.player = new Player({ scene: this, sprite: { spriteKey: PunkSpritesAnims.punkIdle, xPos: 100, yPos: this.height - 100 } })
       .initialize({ size: { x: 24, y: 24 }, scale: 2, offset: { x: 0, y: 20 } });

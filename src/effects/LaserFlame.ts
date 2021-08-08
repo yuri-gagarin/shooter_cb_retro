@@ -1,23 +1,24 @@
-import { Scene, Tilemaps } from "phaser";
-import type { Player } from "../characters/Player";
+import { Scene } from "phaser";
+import { PunkSpritesAnims } from "../characters/sprites/punkSprites";
+import { LaserAnimEffects, LaserSpritesAnims } from "./sprites/laserSprites";
 
 
 export class Laser extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Scene, x: number, y: number, spriteTexture: string) {
     super(scene, x, y, spriteTexture);
   }
-
+ 
   public fire(x: number, y: number): void {
     this.body.reset(x, y);
-    this.setActive(true);
-    this.setVisible(true);
-    this.setVelocityX(300);
-    console.log(this.body.allowGravity)
+    this.setSize(25, 25).setActive(true).setVisible(true).setVelocityX(300);
+    //åconsole.log(this.scene.anims.get(LaserAnimEffects.redYellowLaser));
+    //this.scene.anims.play(LaserAnimEffects.redYellowLaser, this)
+    //this.play(PunkSpritesAnims.punkRun)
   }
 
   public preUpdate(t: number, d: number): void {
     super.preUpdate(t, d);
-    if (this.x > this.scene.cameras.main.scrollX + 400) {
+    if (this.x > this.scene.cameras.main.scrollX + 800) {
       this.setActive(false);
       this.setVisible(false);
     }
@@ -33,7 +34,7 @@ export class LaserGroup extends Phaser.Physics.Arcade.Group {
       frameQuantity: 30,
       active: false,
       visible: false,
-      key: spriteTexture,
+      key: spriteTexture
     });
   }
 
